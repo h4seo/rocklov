@@ -1,0 +1,42 @@
+require "digest/md5"
+
+require_relative "features/support/libs/mongo"
+
+def to_md5(senha)
+  return Digest::MD5.hexdigest(senha)
+end
+
+task :test do
+  puts "executando um teste"
+end
+
+task :local_seeds do
+  CONFIG = YAML.load_file(File.join(Dir.pwd, "features/support/config/local.yml"))
+  users = [
+    { name: "Thiago", email: "thiago@gmail.com", password: to_md5("123456") },
+    { name: "Thiago Um", email: "thiago1@gmail.com", password: to_md5("123456") },
+    { name: "Marcia", email: "marcinha@gmail.com", password: to_md5("123456") },
+    { name: "Carlos do Anúncio", email: "ca@gmail.com", password: to_md5("123456") },
+    { name: "Manoel da Locacao", email: "ml@gmail.com", password: to_md5("123456") },
+
+  ]
+
+  MongoDB.new.drop_danger
+  MongoDB.new.insert_users(users)
+
+  sh "cucumber -p jenkins"
+end
+
+task :hmg_seeds do
+  CONFIG = YAML.load_file(File.join(Dir.pwd, "features/support/config/hmg.yml"))
+  users = [
+    { name: "Thiago", email: "thiago@gmail.com", password: to_md5("123456") },
+    { name: "Thiago Um", email: "thiago1@gmail.com", password: to_md5("123456") },
+
+  ]
+
+  MongoDB.new.drop_danger
+  MongoDB.new.insert_users(users)
+
+  sh "cucumber"
+end
